@@ -83,6 +83,8 @@ Genetic programming systems are great tools for discovering solutions to complex
 Graph databases can be used to easily analyze these events.  Since graph databases are relatively new and provide features to obtain data that would be difficult with standard databases, mapping these events has become a great deal easier. In traditional databases, as data sets increase in size, recursive queries such as finding ancestry become extremely inefficient. By comparison, with a graph database, recursive queries with large data sets remain relatively constant. Since genetic programming involves a significant number of trees and a multitude of generations, graph databases allow for efficient querying of ancestry that would not be possible with more traditional database systems.
 
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 Evolutionary Computation (EC) is a field of Computer Science that utilizes the basic principles of biological evolution to create a system that can be used to find acceptable solutions to problems. In biological systems, organisms better suited for their environment generally yield more descendants than those animals that aren't as suited to their environment. Over time this leads to successive populations being generally more suited for the present environment than the earlier generations. In EC, instead of organisms, we have potential solutions to a problem, which we call \emph{individuals}. These individuals are rated on how successfully they solve the given problem, or how close they get to solving the problem. This rating is called their \emph{fitness}. Successive generations are simulated one after another, which would be similar to time passing in a biological system. The more fit individuals are selected to generate the next generation of individuals by using various systems that mimic sexual reproduction, genetic mutation, and the theory of the survival of the fittest.
 
 EC systems can be used to solve a variety of practical problems and have the added benefit of not requiring much human effort since after the initial set up all of the computation is done by a computer. The only restrictions on what kind of problem an EC system can solve are that a computer has to be able to generate potential solutions as well as evaluate the fitness of potential solutions. EC systems generally do well solving symbolic regression problems, combinatorial optimization problems, such as SAT~\cite{Gottlieb:2002:EAS:638548.638550}, as well as more practical problems such as soft sensors in chemical plants, and radio antennae for NASA~\cite{poli08:fieldguide}.
@@ -90,12 +92,17 @@ EC systems can be used to solve a variety of practical problems and have the add
 Cellular Evolutionary Algorithms (cEAs) are EC systems that separate the population into cells which are connected in certain ways, like 2D grids, 3D grids, or other graphs~\cite{Alba:2008}. These cells are also called \emph{locations}. Individuals in a cell interact only with individuals in their own cell or individuals in their neighborhood. The primary method in which cross-cell interaction occurs is by migration in which an individual moves from one cell to another neighboring cell. The key advantage of implementing a cEA instead of a regular EA is to help maintain diversity, or the number of different kinds of solutions that are present in the system~\cite{Alba:2008}. Having a diverse population has a number of beneficial effects on the system that often lead to acceptable solutions being found more consistently as well as faster.
 
 This paper will explore the differences between cEA systems that are based on both 2D and 3D cuboids. A description of how the populations are first initialized, as well as how subsequent populations are generated will be given in Section 2.1, followed by a more in depth description of 2D and 3D worlds in Section 2.2, and a description of the problems that are used in the experiments in Section 3. Then we will present the results of our experiments in Section 5 and a discussion of those results, as well as other possible research topics suggested by our results will be in Section 6.
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \section{Genetic Programming} \label{Genetic Programming}
 
+Genetic programming is based around the interactions of individuals. Individuals are equivalent to organisms in the biological sphere. And, as in the biological sphere, a group of individuals makes up a population. In the process of biological evolution and natural selection, organisms within a population compete in order to survive and reproduce. Those individuals best adapted to their environment have the best chance of fulfilling these objectives. In genetic programming, individuals within a population compete in order to pass their code on to the next generation. In this case, those individuals that provide a best fit or solution to the user-defined problem have the best odds. The goal of genetic programming, then, is to produce an individual that provides the optimal solution.
+
+The effectiveness of the solution an individual provides is determined by the fitness of the individual. The lower the fitness, the better the solution fits the initial problem. An individual with  a solution that perfectly fit the problem would have a fitness of zero. Therefore, at the conclusion of a genetic programming run, it is desirable to have produced one or more individuals with fitness of or approaching zero.
 
 
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 In this section we will describe the LandscapeEC~\cite{korth:2007,ellgren:2011},  system, which we used to explore the impact of different shapes of worlds. The system also supports a variety of parameters that can be changed to adjust the behavior of the system in various ways. How the world is set up differs depending on the shape of world, or whether or not the world is 3D or 2D. But once the world is formed, the processing of generations, as described in Algorithm~\ref{alg:mainLoop} is the same. This section will be devoted to exploring the details of how this LandscapeEC system works. First, how the initial and subsequent populations are generated will be described in section 2.1. Then, the specifics of 2D and 3D worlds will be presented in section 2.2.
 
 \begin{algorithm}[tb]
@@ -113,6 +120,7 @@ In this section we will describe the LandscapeEC~\cite{korth:2007,ellgren:2011},
 \end{algorithm}
 
 \label{sec:background}
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \subsection{Running a Generation}
 \label{sec:Running a Generation}
