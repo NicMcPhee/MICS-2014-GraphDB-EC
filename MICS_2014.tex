@@ -233,15 +233,16 @@ In our system, individuals contain two items: a function called the tree, and th
 
 After the tree's fitness is computed, we add a constant to the fitness as a means to penalize particularly large trees. This encourages trees to not become excessively large, and is commonly referred to in genetic programming as bloat control. We selected this constant to be a hundredth of the tree size. This implementation of bloat control is relatively weak in the beginning of a run where trees usually have larger fitnesses (therefore not penalizing them unreasonably), but has a significant impact later in the run, where trees should have smaller fitnesses.
 
+To create the initial population, we implemented an algorithm call PTC2. The PTC2 algorithm creates trees by randomly adding operators to an array (leaving blank indices where appropriate for arguments) until a specified length is reached. The blank indices are then filled by leaves (variables and constants). In all runs of our algorithm, leaves consisted of 63\% variables and 37\% constants.
+
 PTC2
+
+TOURNAMENT SELECTION SIZE
 
 CROSSOVER
 
 MUTATION
 
-BLOAT
-
-TOURNAMENT SELECTION SIZE
 
 
   
