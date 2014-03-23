@@ -96,12 +96,11 @@ This paper will explore the differences between cEA systems that are based on bo
 
 \section{Genetic Programming} \label{Genetic Programming}
 
-Genetic programming is based around the interactions of individuals. Individuals are equivalent to organisms in the biological sphere. As in the biological sphere, a group of individuals makes up a population. In the process of biological evolution and natural selection, organisms within a population compete in order to survive and reproduce. Those individuals best adapted to their environment have the best chance of fulfilling these objectives.  In this case, those individuals that provide a best fit or solution to the user-defined problem have the best odds. The goal of genetic programming, then, is to produce an individual that provides the optimal solution.
+Genetic programming is based around the interactions of individuals. Individuals are equivalent to organisms in the biological sphere. As in the biological sphere, a group of individuals makes up a population. In the process of biological evolution and natural selection, organisms within a population compete in order to survive and reproduce. Those individuals best adapted to their environment have the best chance of fulfilling these objectives.  In genetic programming, individuals compete for the same reasons, but here it is those individuals that provide a best fit or solution to the user-defined problem that have the best odds. The goal of genetic programming, is to produce an individual that provides the optimal solution.
 
-In genetic programming, individuals within a population compete in order to pass their code on to the next generation.
-In genetic programming, individuals can propagate their genetic material onto the next generation by three different means. The first and most common method is crossover, comparable to sexual reproduction, where two individuals are selected from the current generation, and elements from each selected individual are combined to form a new individual in the next generation. The second method is mutation, in which an individual is selected and randomly altered, much like biological mutation. The third and final method is reproduction where an individual is copied to the next generation, akin to asexual reproduction. Crossover, mutation, and reproduction are utilized many times, across multiple generations, until an ideal or approximate solution is found~\cite{poli08:fieldguide}.
+The effectiveness of the solution an individual provides is determined by the fitness of the individual. The fitness is the difference between the target function and the function of the individual. The lower the fitness, the better the solution fits the initial problem. An individual with a solution that perfectly fits the problem would have a fitness of zero. Therefore, at the conclusion of a genetic programming run, it is desirable to have produced one or more individuals with fitness of or approaching zero.
 
-The effectiveness of the solution an individual provides is determined by the fitness of the individual. The lower the fitness, the better the solution fits the initial problem. An individual with  a solution that perfectly fit the problem would have a fitness of zero. Therefore, at the conclusion of a genetic programming run, it is desirable to have produced one or more individuals with fitness of or approaching zero.
+Similar to biological evolution, in genetic programming individuals within a population compete in order to pass their code on to the next generation. Individuals can propagate their genetic material onto the next generation by one of three methods. The first and most common method is crossover, comparable to sexual reproduction, where two individuals are selected from the current generation, and elements from each selected individual are combined to form a new individual in the next generation. The second method is mutation, in which an individual is selected and randomly altered, much like biological mutation. The third and final method is reproduction, where an individual is copied to the next generation, akin to asexual reproduction. There is also an alternative form of reproduction known as elitism. Elitism occurs when particularly fit individuals are copied to the next generation by merit of their fitness alone. Crossover, mutation, and reproduction are utilized many times, across multiple generations, until an ideal or approximate solution is found~\cite{poli08:fieldguide}.
 
 
 
@@ -182,7 +181,13 @@ In addition to neighborhoods, another difference between 2D and 3D worlds is sta
 \section{Graph Databases}
 \label{sec:Graph Databases}
 
+The graph database Neo4j was used to track the ancestry of individuals generated during runs of the genetic programming algorithm. This section further describes graph databases, and the various advantages they hold over more traditional SQL databases in recording and accessing information that relies heavily on relationships, including the work done here.
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 The experiment described here use two problems: 3SAT and ONESMAX. Solutions to these problems are naturally expressed as bitstrings, and they span a broad range of difficulties. ONESMAX is trivial to solve, and 3SAT problems range from easy to extraordinarily difficult. The specifics of their properties, as well as their implementation in our system are described below.
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \subsection{The 3SAT Boolean Satisfiability Problem}
 \label{sec:3sat}
