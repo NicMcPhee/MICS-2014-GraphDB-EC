@@ -227,7 +227,7 @@ where the value of the variable $x$ ranged from 0 to 6.2. The constants allowed 
 
 In our system, individuals contain two items: a function called the tree, and the tree's fitness. trees are represented in prefix notation by arrays containing variables, constants, and operators. Prefix notation is a way to write  a function that places the operator before its arguments. For example, a tree of the function $x + (x * 4)$ would be represented by the following array: [+,~x,~*,~x,~4]. The tree's fitness is the sum of the absolute error between the target function and the tree at all predetermined variable values. The absolute error is  the measured value of a quantity $x_{0}$ and its actual value $x$, given by the equation $\Delta x=x_{0}-x$. 
 
-After the tree's fitness is computed, we multiplied the fitness by a constant as a means to penalize particularly large trees. This encourages trees to not become excessively large, and is commonly referred to in genetic programming as bloat control. We selected this constant to be a hundredth of the tree size.
+After the tree's fitness is computed, we add a constant to the fitness as a means to penalize particularly large trees. This encourages trees to not become excessively large, and is commonly referred to in genetic programming as bloat control. We selected this constant to be a hundredth of the tree size. This implementation of bloat control is relatively weak in the beginning of a run where trees usually have larger fitnesses (therefore not penalizing them unreasonably), but has a significant impact later in the run, where trees should have smaller fitnesses.
 
 PTC2
 
