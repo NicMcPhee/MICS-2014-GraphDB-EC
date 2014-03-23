@@ -82,6 +82,8 @@ Genetic programming systems are great tools for discovering solutions to complex
 
 Graph databases can be used to easily analyze these events.  Since graph databases are relatively new and provide features to obtain data that would be difficult with standard databases, mapping these events has become a great deal easier. In traditional databases, as data sets increase in size, recursive queries such as finding ancestry become extremely inefficient. By comparison, with a graph database, recursive queries with large data sets remain relatively constant. Since genetic programming involves a significant number of trees and a multitude of generations, graph databases allow for efficient querying of ancestry that would not be possible with more traditional database systems.
 
+This paper demonstrates the usefulness of graph databases in recording and analyzing data produced by genetic programming systems. A description of genetic programming is provided in Section \ref{Genetic Programming}, and Section \ref{sec:Graph Databases} discusses graph databases. Section \ref{sec:experiments} provides details on how we set up a run of our experiment. In summary, the results of our work are presented in Section \ref{sec:results}, and ideas for future implementation and applications of this work, are presented in Section \ref{sec:conclusion}.
+
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -183,7 +185,9 @@ In addition to neighborhoods, another difference between 2D and 3D worlds is sta
 
 The graph database Neo4j was used to track the ancestry of individuals generated during runs of the genetic programming algorithm. This section further describes graph databases, and the various advantages they hold over more traditional SQL databases in recording and accessing information that relies heavily on relationships, including the work done here.
 
-A graph database is a form of data management system based upon a graph. Information is stored by means of vertices and edges, commonly referred to as nodes and edges, respectively~\cite{GraphDatabases:2013}. In our work, nodes represented individuals, and relationships represented their lineage.
+A graph database is a form of data management system based upon a graph. Information is stored by means of vertices and edges, commonly referred to as nodes and edges, respectively~\cite{GraphDatabases:2013}. In our work, nodes represent individuals, and relationships represent the ancestry of individuals.
+
+Graph databases present three main advantages over SQL databases, these being performance, flexibility, and agility. Performance is discussed here, as it is the advantage that proved most relevant to our work. As the dataset grows, SQL databases tend to become highly inefficient, as the entire dataset must be searched in response to each query. In graph databases, however, the portion of the dataset that must be searched is limited to a specified region, therefore allowing queries to remain efficient~\cite{GraphDatabases:2013}.
 
 
 
