@@ -223,7 +223,12 @@ The ONESMAX problem is a simple problem where the goal is to maximize the number
 \section{Experimental Setup} 
 \label{sec:experiments}
 
-This section explains the details of the configurations used for this research. In all of the runs, all the configurations remained consistent, with the exception of population size. The target function was as follows:
+This section explains the details of the configurations used for this research. Subsection \ref{sec:GPSetup} covers setup of the genetic programming algorithm, and Subsection \ref{sec:Neo4jSetup} discusses setup of the graph database Neo4j.
+
+\subsection{Genetic Programming Setup}
+\label{sec:GPSetup}
+
+In all of the runs, all the configurations remained consistent, with the exception of population size. The target function was as follows:
 \[
 	\sin(x)
 \]
@@ -243,9 +248,10 @@ Mutation begins in a similar manner to reproduction. Two individuals are selecte
 
 Crossover differs from the previous transformations in that it makes two calls to the tournament in order to receive two individuals to produce a single child individual in the next generation. The first tournament results in a root parent. Within this parent, similar to mutation, a random index is chosen. If the index is an operator, the subtree is removed, otherwise only the index is removed. The removed index or indices are then replaced by a subtree randomly selected from the individual that won the second tournament.
 
+\subsection{Neo4j Setup}
+\label{sec:Neo4jSetup}
 
 
-  
 
 
 %This section will explain the specifics of the various configurations that were used for this research. For our runs, we used two different kinds of worlds, 2D worlds and 3D worlds. We also had two kinds of problems, the SAT problem, and the ONESMAX problem. This means that there were essentially four main groups of runs, as both kinds of worlds were run with both kinds of problems.
