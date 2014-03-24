@@ -251,8 +251,26 @@ Crossover differs from the previous transformations in that it makes two calls t
 \subsection{Neo4j Setup}
 \label{sec:Neo4jSetup}
 
+In Neo4j, we set nodes to be individuals and defined their ancestry as relationships. Inside each node, we inserted several attributes belonging to an individual. In addition to the tree and fitness, all nodes also include the penalized fitness, the generation number, the transformation type, the run id (used to differentiate between different runs), and a unique id (used for identifying the specific node). For individuals produced by either crossover or mutation, the ``cut point'' (the index at which the root parent was altered by a transformation) is also included as an attribute.
 
-
+Each individual has a relation to its parent (or parents in the case of crossover). To distinguish between each type of transformation, different types of relationships are used. These relationships are demonstrated in Table~\ref{tab:relationshipTypes}.
+\begin{table}[tb]
+\begin{center}
+\begin{tabular}{|l|l|}
+	\hline
+	\multicolumn{2}{|c|}{Relationship Types} \\
+	\hline
+	Reproduction & PARENTOF \\
+	Elitism & ELITISM \\
+	Mutation & MUTANTOF \\
+	Crossover Root & ROOT\textunderscore XOOF \\
+	Crossover Non-Root & NONROOT\textunderscore XOOF \\
+	\hline
+\end{tabular}
+\caption{On the left are the various transformation types and on the right are the relationship types assigned to each in the Neo4j database. Notice that crossovers have two relations because two parents were selected in tournament.}
+\label{tab:relationshipTypes}
+\end{center}
+\end{table}
 
 %This section will explain the specifics of the various configurations that were used for this research. For our runs, we used two different kinds of worlds, 2D worlds and 3D worlds. We also had two kinds of problems, the SAT problem, and the ONESMAX problem. This means that there were essentially four main groups of runs, as both kinds of worlds were run with both kinds of problems.
 
