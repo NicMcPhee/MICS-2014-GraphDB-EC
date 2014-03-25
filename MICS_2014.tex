@@ -263,17 +263,19 @@ Crossover differs from the previous transformations in that it makes two calls t
 In Neo4j, we set nodes to be individuals and defined their ancestry as relationships. Inside each node, we inserted several attributes belonging to an individual. In addition to the tree and fitness, all nodes also include the penalized fitness, the generation number, the transformation type, the run id (used to differentiate between different runs), and a unique id (used for identifying the specific node). For individuals produced by either crossover or mutation, the ``cut point'' (the index at which the root parent was altered by a transformation) is also included as an attribute. These attributes are summarized in Table~\ref{tab:individualAttributes}.
 \begin{table}[tb]
 \begin{center}
+\resizebox{15cm}{!}{
 \begin{tabular}{|l|r|r|r|r|r|r|r|r|}
 	\hline
-	\multicolumn{9}{|c|}{Individual Attributes} \\
+	\multicolumn{9}{|c|}{\textbf{Individual Attributes}} \\
 	\hline
-	Transformation & Tree & Fitness & Penalized Fitness & Generation Number & Transformation Type & Run ID & Unique ID & Cut Point \\
+	\textbf{Transformation} & \textbf{Tree} & \textbf{Fitness} & \textbf{Penalized Fitness} & \textbf{Generation Number} & \textbf{Transformation Type} & \textbf{Run ID} & \textbf{Unique ID} & \textbf{Cut Point} \\ \hline
 	Elitism & X & X & X & X & X & X & X & \\
 	Reproduction & X & X & X & X & X & X & X & \\
 	Mutation & X & X & X & X & X & X & X & X \\
 	Crossover & X & X & X & X & X & X & X & X \\
 	\hline
 \end{tabular}
+}
 \caption{Chart summarizing attributes that are recorded for individuals produced by each transformation type.}
 \label{tab:individualAttributes}
 \end{center}
@@ -284,7 +286,7 @@ Each individual has a relation to its parent (or parents in the case of crossove
 \begin{center}
 \begin{tabular}{|l|l|}
 	\hline
-	\multicolumn{2}{|c|}{Relationship Types} \\
+	\multicolumn{2}{|c|}{\textbf{Relationship Types}} \\
 	\hline
 	Reproduction & PARENTOF \\
 	Elitism & ELITISM \\
