@@ -260,7 +260,24 @@ Crossover differs from the previous transformations in that it makes two calls t
 \subsection{Neo4j Setup}
 \label{sec:Neo4jSetup}
 
-In Neo4j, we set nodes to be individuals and defined their ancestry as relationships. Inside each node, we inserted several attributes belonging to an individual. In addition to the tree and fitness, all nodes also include the penalized fitness, the generation number, the transformation type, the run id (used to differentiate between different runs), and a unique id (used for identifying the specific node). For individuals produced by either crossover or mutation, the ``cut point'' (the index at which the root parent was altered by a transformation) is also included as an attribute.
+In Neo4j, we set nodes to be individuals and defined their ancestry as relationships. Inside each node, we inserted several attributes belonging to an individual. In addition to the tree and fitness, all nodes also include the penalized fitness, the generation number, the transformation type, the run id (used to differentiate between different runs), and a unique id (used for identifying the specific node). For individuals produced by either crossover or mutation, the ``cut point'' (the index at which the root parent was altered by a transformation) is also included as an attribute. These attributes are summarized in Table~\ref{tab:individualAttributes}.
+\begin{table}[tb]
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|r|r|r|r|}
+	\hline
+	\multicolumn{9}{|c|}{Individual Attributes} \\
+	\hline
+	Transformation & Tree & Fitness & Penalized Fitness & Generation Number & Transformation Type & Run ID & Unique ID & Cut Point \\
+	Elitism & X & X & X & X & X & X & X & \\
+	Reproduction & X & X & X & X & X & X & X & \\
+	Mutation & X & X & X & X & X & X & X & X \\
+	Crossover & X & X & X & X & X & X & X & X \\
+	\hline
+\end{tabular}
+\caption{Chart summarizing attributes that are recorded for individuals produced by each transformation type.}
+\label{tab:individualAttributes}
+\end{center}
+\end{table}
 
 Each individual has a relation to its parent (or parents in the case of crossover). To distinguish between each type of transformation, different types of relationships are used. These relationships are demonstrated in Table~\ref{tab:relationshipTypes}.
 \begin{table}[tb]
@@ -398,7 +415,6 @@ Each individual has a relation to its parent (or parents in the case of crossove
 
 \section{Conclusions} \label{sec:conclusion}
 
-
 A critical point is that graph databases like Neo4J don't make anything possible that was once impossible; 
 they instead make these things vastly simpler and allow open-ended exploration. Each of the queries and questions
 we've discussed could be handled by, for example, special purpose code added to the evolutionary system to specifically
@@ -408,6 +424,8 @@ significant, and that these lineages quickly coalesced into a shared common ance
 custom system to track that data, and there has been limited follow-up, by us or others, since then. We suspect a
 significant reason for the lack of similar work is simply the effort required to collect and analyze the substantial
 amount of data this entails, and the lack of good tools to simplify that process.
+
+
 
 
 
