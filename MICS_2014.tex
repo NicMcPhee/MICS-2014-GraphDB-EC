@@ -50,11 +50,12 @@
 \title{LandscapeEC: Comparing 2D to 3D Cellular Evolutionary Algorithms}
 
 \author{
- 		Nicholas Cornhill and Nicholas Freitag McPhee\\
+ 		David Donatucci, Kirbie Dramdahl, and Nicholas Freitag McPhee\\
         Division of Science and Mathematics\\
         University of Minnesota, Morris\\
         Morris, MN 562367\\
-        cornh044@morris.umn.edu\\
+        donat056@morris.umn.edu\\
+        dramd002@morris.umn.edu\\
         mcphee@morris.umn.edu\\
 }
 \date{} 
@@ -76,18 +77,13 @@ Our hope is that by recording and analyzing tree ancestry, we will be able to ob
 
 \section{Introduction} \label{sec:intro}
 
-Genetic programming (GP) is an artificial intelligence approach that implements the basic principles of biology to discover solutions to a user defined problem. Like biological evolution, genetic programming consists of organisms called individuals which are evaluated based upon their fitness. Individuals most suited to their environment will have a stronger fitness and individuals with stronger fitness typically produce more offspring than those with weaker fitness. Over many generations, descendants generally have stronger fitness than their ancestors from previous generations. 
+Genetic programming (GP) is an artificial intelligence approach that implements the basic principles of biology to discover solutions to a user defined problem. Like biological evolution, genetic programming consists of organisms called individuals which are evaluated based upon their fitness. Individuals most suited to their environment will have a stronger fitness and individuals with stronger fitness typically produce more offspring than those with weaker fitness. Over many generations, descendants generally have stronger fitness than their ancestors from previous generations.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Talk about Symbolic Regression
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Genetic programming systems are great tools for discovering solutions to complex problems involving many variables that would be extremely difficult to solve by other means. Genetic programming has applications in chemistry, electronic circuit design, economics, and many other applications. 
 
+While genetic algorithms have clearly been successful in a variety of settings, it is often challenging to determine why this is true. In order to reach a greater understanding of the processes involved in genetic programming, it is necessary to examine the internal interactions of individuals within a run, rather than simply statistical summaries of the final results. Even simple GP runs can generate very large data sets, however, especially if one records all the individuals and relationships from every generation.
 
-Genetic programming systems are great tools for discovering solutions to complex problems involving many variables that would be extremely difficult to solve by other means. Genetic programming has applications in chemistry, electronic circuit design, economics, and many other applications. Since most of the work is automated, genetic programming systems can evolve functions with little to no user interaction.
-
-While genetic algorithms have clearly been successful in a variety of settings, it is often difficult to determine why this is true. In order to reach a greater understanding of the processes involved in genetic programming, it is necessary to examine the internal interactions of individuals within a run, rather than simply statistical summaries of the final results. Even simple GP runs can generate very large data sets, however, especially if one records all the individuals and relationships from every generation. 
-
-Databases are a natural tool for handling such large data sets, but important questions and queries for evolutionary computation (EC) work are difficult when using traditional relational databases. A natural question when analyzing an EC run, for example, would be to find all the ancestors of the ``winning'' individual. If we used a relational database, we might store the IDs of the parents along with each individual. A single query would then return the parents of an individual, but then additional queries (one per parent) would be needed to get the set of grandparents, and additional queries (one per grandparent) would be needed to get the set of great grandparents, etc. Assuming two parents per individual, the number of queries will then grow as $O(2^n)$ where $n$ is the number of generations back we want to collect ancestors for, making this approach totally unfeasible for a host of interesting and important questions.
+Databases are a natural tool for handling such large data sets, but important questions and queries for evolutionary computation (EC) work are difficult when using relational databases. A natural question when analyzing an EC run, for example, would be to find all the ancestors of the ``winning'' individual. If we used a relational database, we might store the IDs of the parents along with each individual. A single query would then return the parents of an individual, but then additional queries (one per parent) would be needed to get the set of grandparents, and additional queries (one per grandparent) would be needed to get the set of great grandparents, etc. Assuming two parents per individual, the number of queries will then grow as $O(2^n)$ where $n$ is the number of generations back we want to collect ancestors for, making this approach totally unfeasible for a host of interesting and important questions.
 
 New graph database technologies, however, have the potential to allow us to easily perform these sorts of queries and analyze important dynamic properties of GP runs. In graph databases one stores nodes and relationships, such as individuals and their relationships to their parents, and the query language makes it easy to search for paths through the graph having specified properties. This makes it fairly trivial to ask important ancestry questions about a run; the query \texttt{MATCH (n)<-[*]-(p)}, for example, will find all the ancestors $p$ of some individual $n$. (The details of graph databases and the Cypher query language will be described in more detail in Section~\ref{sec:Graph Databases}.)
 
@@ -115,7 +111,7 @@ Genetic programming is based around the interactions of individuals. Individuals
 
 The effectiveness of the solution an individual provides is determined by the fitness of the individual. The fitness is the difference between the target function and the function of the individual. The lower the fitness, the better the solution fits the initial problem. An individual with a solution that perfectly fits the problem would have a fitness of zero. Therefore, at the conclusion of a genetic programming run, it is desirable to have produced one or more individuals with fitness of or approaching zero.
 
-At the start of a run, the population is filled with randomly generated individuals. The individuals within this population then compete in order to pass their code on to the next generation, similar to biological evolution. This competition, in genetic programming, is called the tournament, where a specified number of individuals are randomly chosen from the population, and those with the best fitness are selected to produce the next generation. These selected individuals can propagate their genetic material onto the next generation by one of three methods. The first and most common method is crossover, comparable to sexual reproduction, where two individuals are selected from the current generation, and elements from each selected individual are combined to form a new individual in the next generation. The second method is mutation, in which an individual is selected and randomly altered, much like biological mutation. The third and final method is reproduction, where an individual is copied to the next generation, akin to asexual reproduction. There is also an alternative form of reproduction known as elitism. Elitism occurs when particularly fit individuals are copied to the next generation by merit of their fitness alone. Crossover, mutation, and reproduction are utilized many times, across multiple generations, until an ideal or approximate solution is found~\cite{poli08:fieldguide}.
+At the start of a run, the population is filled with randomly generated individuals. The individuals within this population then compete in order to pass their code on to the next generation, similar to biological evolution. This competition, in genetic programming, is called the tournament, where a specified number of individuals are randomly chosen from the population, and those with the best fitness are selected to produce the next generation. These selected individuals can propagate their genetic material onto the next generation by one of three transformation types. The first and most common method is crossover, comparable to sexual reproduction, where two individuals are selected from the current generation, and elements from each selected individual are combined to form a new individual in the next generation. The second method is mutation, in which an individual is selected and randomly altered, much like biological mutation. The third and final method is reproduction, where an individual is copied to the next generation, akin to asexual reproduction. There is also an alternative form of reproduction known as elitism. Elitism occurs when particularly fit individuals are copied to the next generation by merit of their fitness alone. Crossover, mutation, and reproduction are utilized many times, across multiple generations, until an ideal or approximate solution is found~\cite{poli08:fieldguide}.
 
 
 
@@ -198,11 +194,25 @@ At the start of a run, the population is filled with randomly generated individu
 \section{Graph Databases}
 \label{sec:Graph Databases}
 
-The graph database Neo4j was used to track the ancestry of individuals generated during runs of the genetic programming algorithm. This section further describes graph databases, and the various advantages they hold over more traditional SQL databases in recording and accessing information that relies heavily on relationships, including the work done here.
+The graph database Neo4j was used collect data generated by runs of the genetic programming algorithm. This section further describes Neo4j, its query language Cypher, and the various advantages they hold over relational databases in recording and accessing information that relies heavily on recursion.
 
-A graph database is a form of data management system based upon a graph. Information is stored by means of vertices and edges, commonly referred to as nodes and edges, respectively~\cite{GraphDatabases:2013}. In our work, nodes represent individuals, and relationships represent the ancestry of individuals.
+Neo4j is a form of data management system based upon a graph. Information is stored by means of vertices and edges, commonly referred to as nodes and relationships, respectively~\cite{GraphDatabases:2013}. In our work, nodes represent individuals, and relationships represent the transformation types between individuals.
 
-Graph databases present three main advantages over SQL databases, these being performance, flexibility, and agility. Performance is discussed here, as it is the advantage that proved most relevant to our work. As the dataset grows, SQL databases tend to become highly inefficient, as the entire dataset must be searched in response to each query. In graph databases, however, the portion of the dataset that must be searched is limited to a specified region, therefore allowing queries to remain efficient~\cite{GraphDatabases:2013}.
+Cypher allows data to be readily extracted from Neo4j. There are three fundamental elements to queries in Cypher. The START clause specifies a starting location in the database, selecting the node or relationship where the query will begin. The RETURN clause specifies which nodes, relationships, or properties should be returned to the user. The MATCH clause is the main section of a query. MATCH specifies what the query will discover. To write the MATCH clause nodes and relationships are drawn with ASCII characters. A node is indicated by parenthesis ( ), and relationships are composed of dashes along with greater-than or less-than signs to indicate the direction of the relationship. Inside of brackets [ ] between the dashes are the specified relationship names prefixed by a colon~\cite{GraphDatabases:2013}. In the example query, ‘example1’ we see that the START clause indicates the node to begin the query, the MATCH clause finds all nodes that are children of the starting node, and the RETURN clause yields the starting node and all nodes that are children of that node.
+
+START parent=node(43)
+MATCH (parent)-[: PARENTOF]->(child) 
+RETURN parent, child;
+
+This query produces the results in Figure 1.
+\begin{figure}[tb]
+ \centering
+ \includegraphics[height=0.68\textwidth]{exampleQuery}
+ \caption{Results of Example Query}
+ \label{fig:exampleQuery}
+\end{figure}
+
+The advantage of a graph database over relational databases relevant to our research was performance. As the dataset grows, relational databases tend to become highly inefficient, as the entire dataset must be searched in response to each query. In graph databases, however, the portion of the dataset that must be searched is limited because the query will only search along an available path connected by relationships. Therefore, this structure allows queries to remain efficient~\cite{GraphDatabases:2013}.
 
 
 
@@ -237,13 +247,13 @@ This section explains the details of the configurations used for this research. 
 \subsection{Genetic Programming Setup}
 \label{sec:GPSetup}
 
-In all of the runs, all the configurations remained consistent, with the exception of population size. The target function was as follows:
+In all of the runs, the configurations remained consistent, with the exception of population size. In the several runs that were performed, the population size was either 1,000, or 10,000. The target function was as follows:
 \[
-	\sin(x)
+    \sin(x)
 \]
 where the value of the variable $x$ ranged from 0 to 6.2, increasing by steps of 0.1. The constants allowed were doubles that ranged between -5 and 5, and $x$ was the sole variable. The operations allowed in order to achieve an optimal solution to the target were the binary operations: addition, subtraction, multiplication, and division. Since division is undefined when the denominator is equal to zero, we implemented protected division. In our protected division, if the denominator equals zero, then regardless of the numerator value the output will be one. The reason we chose the output one for protected division is so there would not be a discontinuity in the function $x/x$ when $x = 0$. Therefore, when evolving $x/x$ in a individual we will continue to obtain the value one.
 
-In our system, individuals contain two items: a function called the tree, and the tree's fitness. trees are represented in prefix notation by arrays containing variables, constants, and operators. Prefix notation is a way to write  a function that places the operator before its arguments. For example, a tree of the function $x + (x * 4)$ would be represented by the following array: [+,~x,~*,~x,~4]. The tree's fitness is the sum of the absolute error between the target function and the tree at all predetermined variable values. The absolute error is  the measured value of a quantity $x_{0}$ and its actual value $x$, given by the equation $\Delta x=x_{0}-x$. 
+In our system, individuals contain two items: a function called the tree, and the tree's fitness. trees are represented in prefix notation by arrays containing variables, constants, and operators. Prefix notation is a way to write  a function that places the operator before its arguments. For example, a tree of the function $x + (x * 4)$ would be represented by the following array: [+,~x,~*,~x,~4]. The tree's fitness is the sum of the absolute error between the target function and the tree at all predetermined variable values. The absolute error is  the measured value of a quantity $x_{0}$ and its actual value $x$, given by the equation $\Delta x=x_{0}-x$.
 
 After the tree's fitness is computed, we add a constant to the fitness as a means to penalize particularly large trees. This encourages trees to not become excessively large, and is commonly referred to in genetic programming as bloat control. We selected this constant to be a hundredth of the tree size. This implementation of bloat control is relatively weak in the beginning of a run where trees usually have larger fitnesses (therefore not penalizing them unreasonably), but has a significant impact later in the run, where trees should have smaller fitnesses.
 
@@ -263,17 +273,19 @@ Crossover differs from the previous transformations in that it makes two calls t
 In Neo4j, we set nodes to be individuals and defined their ancestry as relationships. Inside each node, we inserted several attributes belonging to an individual. In addition to the tree and fitness, all nodes also include the penalized fitness, the generation number, the transformation type, the run id (used to differentiate between different runs), and a unique id (used for identifying the specific node). For individuals produced by either crossover or mutation, the ``cut point'' (the index at which the root parent was altered by a transformation) is also included as an attribute. These attributes are summarized in Table~\ref{tab:individualAttributes}.
 \begin{table}[tb]
 \begin{center}
+\resizebox{15cm}{!}{
 \begin{tabular}{|l|r|r|r|r|r|r|r|r|}
-	\hline
-	\multicolumn{9}{|c|}{Individual Attributes} \\
-	\hline
-	Transformation & Tree & Fitness & Penalized Fitness & Generation Number & Transformation Type & Run ID & Unique ID & Cut Point \\
-	Elitism & X & X & X & X & X & X & X & \\
-	Reproduction & X & X & X & X & X & X & X & \\
-	Mutation & X & X & X & X & X & X & X & X \\
-	Crossover & X & X & X & X & X & X & X & X \\
-	\hline
+    \hline
+    \multicolumn{9}{|c|}{\textbf{Individual Attributes}} \\
+    \hline
+    \textbf{Transformation} & \textbf{Tree} & \textbf{Fitness} & \textbf{Penalized Fitness} & \textbf{Generation Number} & \textbf{Transformation Type} & \textbf{Run ID} & \textbf{Unique ID} & \textbf{Cut Point} \\ \hline
+    Elitism & X & X & X & X & X & X & X & \\
+    Reproduction & X & X & X & X & X & X & X & \\
+    Mutation & X & X & X & X & X & X & X & X \\
+    Crossover & X & X & X & X & X & X & X & X \\
+    \hline
 \end{tabular}
+}
 \caption{Chart summarizing attributes that are recorded for individuals produced by each transformation type.}
 \label{tab:individualAttributes}
 \end{center}
@@ -283,15 +295,15 @@ Each individual has a relation to its parent (or parents in the case of crossove
 \begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l|l|}
-	\hline
-	\multicolumn{2}{|c|}{Relationship Types} \\
-	\hline
-	Reproduction & PARENTOF \\
-	Elitism & ELITISM \\
-	Mutation & MUTANTOF \\
-	Crossover Root & ROOT\textunderscore XOOF \\
-	Crossover Non-Root & NONROOT\textunderscore XOOF \\
-	\hline
+    \hline
+    \multicolumn{2}{|c|}{\textbf{Relationship Types}} \\
+    \hline
+    Reproduction & PARENTOF \\
+    Elitism & ELITISM \\
+    Mutation & MUTANTOF \\
+    Crossover Root & ROOT\textunderscore XOOF \\
+    Crossover Non-Root & NONROOT\textunderscore XOOF \\
+    \hline
 \end{tabular}
 \caption{On the left are the various transformation types and on the right are the relationship types assigned to each in the Neo4j database. Notice that crossovers have two relations because two parents were selected in tournament.}
 \label{tab:relationshipTypes}
@@ -369,7 +381,12 @@ Each individual has a relation to its parent (or parents in the case of crossove
 
 \section{Results} \label{sec:results}
 
-
+\begin{figure}[tb]
+ \centering
+ \includegraphics[height=0.68\textwidth]{Root_vs_nonroot_line_fitnesses}
+ \caption{Root Versus Non-Root Fitness in Ancestry of Best Tree from Final Generation of a 1K Run}
+ \label{fig:rootVsNonrootFitness}
+\end{figure}
 
 
 
@@ -415,15 +432,7 @@ Each individual has a relation to its parent (or parents in the case of crossove
 
 \section{Conclusions} \label{sec:conclusion}
 
-A critical point is that graph databases like Neo4J don't make anything possible that was once impossible; 
-they instead make these things vastly simpler and allow open-ended exploration. Each of the queries and questions
-we've discussed could be handled by, for example, special purpose code added to the evolutionary system to specifically
-capture that specific information. Many, if not most, of these have no doubt been addressed in a piecemeal fashion
-by previous research. We observed (GECCO 99 paper) nearly 15 years ago, for example, that root parent lineages were
-significant, and that these lineages quickly coalesced into a shared common ancestor, but that was using a specialized
-custom system to track that data, and there has been limited follow-up, by us or others, since then. We suspect a
-significant reason for the lack of similar work is simply the effort required to collect and analyze the substantial
-amount of data this entails, and the lack of good tools to simplify that process.
+A critical point is that graph databases like Neo4j don't make anything possible that was once impossible; they instead make these things vastly simpler and allow open-ended exploration. Each of the queries and questions we've discussed could be handled by, for example, special purpose code added to the evolutionary system to specifically capture that specific information. Many, if not most, of these have no doubt been addressed in a piecemeal fashion by previous research. We observed (GECCO 99 paper) nearly 15 years ago, for example, that root parent lineages were significant, and that these lineages quickly coalesced into a shared common ancestor, but that was using a specialized custom system to track that data, and there has been limited follow-up, by us or others, since then. We suspect a significant reason for the lack of similar work is simply the effort required to collect and analyze the substantial amount of data this entails, and the lack of good tools to simplify that process.
 
 
 
