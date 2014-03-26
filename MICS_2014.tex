@@ -47,10 +47,10 @@
 
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
-\title{LandscapeEC: Comparing 2D to 3D Cellular Evolutionary Algorithms}
+\title{Analysis of Genetic Programming Ancestry Using a Graph Database}
 
 \author{
- 		David Donatucci, Kirbie Dramdahl, and Nicholas Freitag McPhee\\
+ 		David Donatucci, M. Kirbie Dramdahl, and Nicholas Freitag McPhee\\
         Division of Science and Mathematics\\
         University of Minnesota, Morris\\
         Morris, MN 562367\\
@@ -207,8 +207,8 @@ RETURN parent, child;
 
 This query produces the results in Figure 1.
 \begin{figure}[tb]
- \centering
- \includegraphics[height=0.68\textwidth]{exampleQuery}
+ %\centering
+ \includegraphics[width=8in,trim={1.5in 6.5in 0 1.5in}]{exampleQuery}
  \caption{Results of Example Query}
  \label{fig:exampleQuery}
 \end{figure}
@@ -276,7 +276,6 @@ In Neo4j, we set nodes to be individuals and defined their ancestry as relations
 \begin{center}
 \resizebox{15cm}{!}{
 \begin{tabular}{|l|r|r|r|r|r|r|r|r|}
-<<<<<<< HEAD
     \hline
     \multicolumn{9}{|c|}{\textbf{Individual Attributes}} \\
     \hline
@@ -286,17 +285,6 @@ In Neo4j, we set nodes to be individuals and defined their ancestry as relations
     Mutation & X & X & X & X & X & X & X & X \\
     Crossover & X & X & X & X & X & X & X & X \\
     \hline
-=======
-	\hline
-	\multicolumn{9}{|c|}{\textbf{Individual Attributes}} \\
-	\hline
-	\textbf{Transformation} & \textbf{Tree} & \textbf{Fitness} & \textbf{Penalized Fitness} & \textbf{Generation Number} & \textbf{Transformation Type} & \textbf{Run ID} & \textbf{Unique ID} & \textbf{Cut Point} \\ \hline
-	Elitism & X & X & X & X & X & X & X & \\
-	Reproduction & X & X & X & X & X & X & X & \\
-	Mutation & X & X & X & X & X & X & X & X \\
-	Crossover & X & X & X & X & X & X & X & X \\
-	\hline
->>>>>>> 06981be135a850e522c5450f9feb6a21f4ebb6bc
 \end{tabular}
 }
 \caption{Chart summarizing attributes that are recorded for individuals produced by each transformation type.}
@@ -308,7 +296,6 @@ Each individual has a relation to its parent (or parents in the case of crossove
 \begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l|l|}
-<<<<<<< HEAD
     \hline
     \multicolumn{2}{|c|}{\textbf{Relationship Types}} \\
     \hline
@@ -318,17 +305,6 @@ Each individual has a relation to its parent (or parents in the case of crossove
     Crossover Root & ROOT\textunderscore XOOF \\
     Crossover Non-Root & NONROOT\textunderscore XOOF \\
     \hline
-=======
-	\hline
-	\multicolumn{2}{|c|}{\textbf{Relationship Types}} \\
-	\hline
-	Reproduction & PARENTOF \\
-	Elitism & ELITISM \\
-	Mutation & MUTANTOF \\
-	Crossover Root & ROOT\textunderscore XOOF \\
-	Crossover Non-Root & NONROOT\textunderscore XOOF \\
-	\hline
->>>>>>> 06981be135a850e522c5450f9feb6a21f4ebb6bc
 \end{tabular}
 \caption{On the left are the various transformation types and on the right are the relationship types assigned to each in the Neo4j database. Notice that crossovers have two relations because two parents were selected in tournament.}
 \label{tab:relationshipTypes}
