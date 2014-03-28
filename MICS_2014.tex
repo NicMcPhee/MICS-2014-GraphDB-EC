@@ -196,14 +196,16 @@ To obtain the results presented here, we completed six runs at population 1000, 
 To answer the first question, we implemented the following query:
 
 \begin{verbatim}
-MATCH (s:Individual {generation:1}-[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*99]-> (n:Individual {MATCH (s:Individual {generation:1})-> (n:Individual {generation: 100})
-RETURN distinct s;
+MATCH (startNode:Individual {generation: 1})-
+[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*99]->
+(endNode:Individual {generation:100})
+RETURN distinct id(startNode), startNode.penalizedFitness;
 \end{verbatim}
 
 The MATCH statement describes that s and n are individuals in generation one and one hundred respectively using indexing. The relationship between them must be elitism, reproduction, mutation, or root parent crossover and must have a path depth of 99.
-The RETURN statment returns all individuals in the initial generation that fit the criteria.    
+The RETURN statment returns all individual ids along with its fitness in the initial generation that fit the criteria.    
 
-mutation vs crossovers
+To determine the effectiveness of mutation versus crossover we wrote several queries similiar to the following:
 
 \begin{verbatim}
 
@@ -216,6 +218,16 @@ where c.penalizedFitness < r.penalizedFitness
 RETURN count(distinct c);
 
 \end{verbatim}
+
+These two queries specifically identified the total number of crossovers and the number of root crossovers where the child was more fit than either parent and the root parent was more fit than the non-root parent. The other two cases, mutation and non-root crossover (the child was more fit than either parent and non-root parent was more fit than the root parent), represented in Table ... had similar structures. This allowed for collection of the percentages seen in Table .... 
+
+\begin{verbatim}
+MATCH (n:Individual {generation: 100})
+<-[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*0..]-(p)
+<-[rel:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF]-(q)
+RETURN distinct id(p), type(rel), id(q);
+\end{verbatim}
+
 
 \section{Conclusions} \label{sec:conclusion}
 
