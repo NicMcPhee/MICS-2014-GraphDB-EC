@@ -261,6 +261,14 @@ RETURN distinct id(parent), type(rel), id(grandparent);
 From this query we found several interesting occurrences. In finding a common ancestor, we can assume that this ancestor carries certain positive traits. This information may be relevant in determining if traits other than fitness give an individual  chance of survival. In the 10K run, two distinct species were produced. One species flourished, accounting for 99.76\% of the final population while the second species consisted of only 24 individuals. These two species are descended from the individuals presented in Table~\ref{tab:descendantsTable}. While there are two individuals that are direct ancestors, descendants of the more fit individual predominated. Given more time, the second species most likely would have gone extinct.
 
 %What does fitness over time look like?
+The fourth and final question asked was answered by the following query:
+\begin{verbatim}
+start n=node(99000) 
+match ps = (n)<-[r:ELITISM|PARENTOF|ROOT_XOOF|MUTANTOF*]-(p) 
+return distinct ps;
+\end{verbatim}
+
+From this query, we obtained a graph of the entire root line of the ``winning'' individual. From this graph, we were able to abstract the fitness of each individual in the line. This same process was repeated for the non-root line. The resulting information regarding the fitness of both root and non-root ancestors of the most fit final individual over all generations is presented in Figure \ref{fig:rootVsNonrootFitness}. 
 \begin{figure}[tb]
  \centering
  \includegraphics[height=0.68\textwidth]{Root_vs_nonroot_line_fitnesses}
