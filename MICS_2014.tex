@@ -189,10 +189,10 @@ To obtain the results presented here, we completed six runs at population 1000, 
 To answer the first question, we implemented the following query:
 
 \begin{verbatim}
-MATCH (startNode:Individual {generation: 1})-
-[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*99]->
-(endNode:Individual {generation:100})
-RETURN distinct id(startNode), startNode.penalizedFitness;
+MATCH (startNode:Individual {generation: 1})
+   -[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*99]->
+   (endNode:Individual {generation:100})
+RETURN DISTINCT id(startNode), startNode.penalizedFitness;
 \end{verbatim}
 
 The MATCH statement describes that s and n are individuals in generation one and one hundred respectively using indexing. The relationship between them must be elitism, reproduction, mutation, or root parent crossover and must have a path depth of 99. The RETURN statement returns all individual ids along with its fitness in the initial generation that fit the criteria. This query produces the set of individuals that have descendant in the final generation. These individuals and their penalized fitness are represented in Table \ref{tab:descendantsTable}.
@@ -200,8 +200,6 @@ The MATCH statement describes that s and n are individuals in generation one and
 \begin{center}
 \begin{tabular}{|r|r|}
     \hline
-    %\multicolumn{2}{|c|}{\textbf{First Generation Individuals with Final Generation Descendants}} \\
-    %\hline
     \textbf{Individual} & \textbf{Penalized Fitness} \\ \hline
     2595 & 38.9820979981526 \\
     3325 & 40.36373034994929 \\
@@ -219,33 +217,36 @@ To determine the effectiveness of mutation versus crossover we wrote several que
 \begin{verbatim}
 //Count total number of crossovers
 
-MATCH (r)-[:ROOT_XOOF]->(c)<-[:NONROOT_XOOF]-(n)
-RETURN count(distinct c);
+MATCH (rootParent)-[:ROOT_XOOF]->(child)
+   <-[:NONROOT_XOOF]-(nonRootParent)
+RETURN COUNT(DISTINCT child);
 
 //Count total number of crossovers fitting the description
 
-MATCH (r)-[:ROOT_XOOF]->(c)<-[:NONROOT_XOOF]-(n)
-where c.penalizedFitness < r.penalizedFitness 
-     AND r.penalizedFitness < n.penalizedFitness
-RETURN count(distinct c);
+MATCH (rootParent)-[:ROOT_XOOF]->(child)
+   <-[:NONROOT_XOOF]-(nonRootParent)
+WHERE child.penalizedFitness < rootParent.penalizedFitness 
+   AND rootParent.penalizedFitness 
+                          < nonRootParent.penalizedFitness
+RETURN COUNT(DISTINCT child);
 
 \end{verbatim}
 
 These two queries above specifically identified the total number of crossovers and the number of root crossovers where the child was more fit than either parent and the root parent was more fit than the non-root parent. The other two cases, mutation and non-root crossover (the child was more fit than either parent and non-root parent was more fit than the root parent), represented in Figure \ref{fig:improvedFitness} had similar structures. The results of this query may be seen in Figure \ref{fig:improvedFitness}.
 
-\begin{figure}[tb]
+\begin{figure}[p]
  \centering
- \includegraphics[height=0.68\textwidth]{Blocked_success_percentages}
+ \includegraphics[height=0.63\textwidth]{Blocked_success_percentages}
  \caption{Percentage of Cases Where the Child is Fitter Than the Parent Over Five Generation Blocks in 10K Run}
  \label{fig:improvedFitness}
 \end{figure}
 
-To confirm the data we found in Figure~\ref{fig:improvedFitness}, we used the same queries on three 1K runs to obtain the graph in Figure~\ref{improvedFitness1K}. Again, we obtained similar data. In the first generations, mutation produced children that were better than their parents over 30\% of the time. As time progressed, the success of mutation decreased dramatically as time progressed dropping as low as ??5??\% of the time. On the other hand, the crossover percentages stayed relatively constant with the exception of the first ten generations of non-root crossover. Notice that the crossover variances were very small, meaning that crossover is a stable transformation over time. 
+To confirm the data we found in Figure~\ref{fig:improvedFitness}, we used the same queries on three 1K runs to obtain the graph in Figure~\ref{fig:improvedFitness1K}. Again, we obtained similar data. In the first generations, mutation produced children that were better than their parents over 30\% of the time. As time progressed, the success of mutation decreased dramatically as time progressed dropping as low as 2\% over the span of a five generation section. On the other hand, the crossover percentages stayed relatively constant with the exception of the first ten generations of non-root crossover. Notice that the crossover variances were very small, meaning that crossover is a stable transformation over time. 
 
-\begin{figure}[tb]
+\begin{figure}[p]
  \centering
- \includegraphics[height=0.68\textwidth]{Percent_successful_Axiom_1K_runs}
- \caption{Percentage of Cases Where the Child is Fitter Than the Parent Over Five Generation Blocks in Three 1K Runs. Shadows indicate the variance between each of the three runs.  }
+ \includegraphics[height=0.63\textwidth]{Percent_successful_Axiom_1K_runs}
+ \caption{Percentage of Cases Where the Child is Fitter Than the Parent Over Five Generation Blocks in Three 1K Runs. Shadows indicate the variance between each of the three runs.}
  \label{fig:improvedFitness1K}
 \end{figure}
 
@@ -254,32 +255,41 @@ To find a common ancestor of entire last generation, we executed the following q
 
 \begin{verbatim}
 MATCH (child:Individual {generation: 100})
-<-[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*0..]-(parent)
-<-[rel:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF]-(grandparent)
-RETURN distinct id(parent), type(rel), id(grandparent);
+   <-[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*0..]-(parent)
+   <-[rel:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF]-(grandparent)
+RETURN DISTINCT id(parent), type(rel), id(grandparent);
 \end{verbatim}
 
 \begin{figure}[tb]
  \centering
  \includegraphics[width= \textwidth]{subset_confluence_trimmed}
- \caption{Results of finding the common ancestor between 11 random individuals and the ``winner'' highlight by a green box. Mutations relationships are highlighted by red arrows. Crossovers are blue arrows. Reproduction is a dotted black line and elitism is a solid black line.}
- \label{fig:exampleQuery1}
+ \caption{Results of finding the common ancestor  between the ``winner'' highlight by a green box and 11 of its close relatives. Mutations relationships are highlighted by red arrows. Crossovers are blue arrows. Reproduction is a dotted black line and elitism is a solid black line.}
+ \label{fig:ancestryGraph}
 \end{figure}
 
-From this query we found several interesting occurrences. In finding a common ancestor, we can assume that this ancestor carries certain positive traits. This information may be relevant in determining if traits other than fitness give an individual  chance of survival. In the 10K run, two distinct species were produced. One species flourished, accounting for 99.76\% of the final population while the second species consisted of only 24 individuals. These two species are descended from the individuals presented in Table~\ref{tab:descendantsTable}. While there are two individuals that are direct ancestors, descendants of the more fit individual predominated. Given more time, the second species most likely would have gone extinct.
+From this query we found several interesting occurrences. An example of a common ancestry graph can be seen in Figure \ref{fig:ancestryGraph} In finding a common ancestor, we can assume that this ancestor carries certain positive traits. This information may be relevant in determining if traits other than fitness give an individual  chance of survival. In the 10K run, two distinct clades were produced. One clade flourished, accounting for 99.76\% of the final population while the second clade consisted of only 24 individuals. These two clades are descended from the individuals presented in Table~\ref{tab:descendantsTable}. While there are two individuals that are direct ancestors, descendants of the more fit individual predominated. Given more time, the second clade most likely would have gone extinct.
 
 The fourth and final question asked was answered by the following query:
 \begin{verbatim}
-start n=node(99000) 
-match ps = (n)<-[r:ELITISM|PARENTOF|ROOT_XOOF|MUTANTOF*]-(p) 
-return distinct ps;
+START startNode=node(99000) 
+MATCH rootPath = (startNode)
+   <-[rel:ELITISM|PARENTOF|ROOT_XOOF|MUTANTOF*]-(parentNode) 
+RETURN DISTINCT rootPath;
 \end{verbatim}
 
-From this query, we obtained a graph of the entire root line of the ``winning'' individual. From this graph, we were able to abstract the fitness of each individual in the line. This same process was repeated for the non-root line. The resulting information regarding the fitness of both root and non-root ancestors of the most fit final individual over all generations is presented in Figure \ref{fig:rootVsNonrootFitness}. 
 \begin{figure}[tb]
  \centering
- \includegraphics[height=0.68\textwidth]{Root_vs_nonroot_line_fitnesses}
- \caption{Root Versus Non-Root Fitness in Ancestry of Best Tree from Final Generation of a 10K Run}
+ \includegraphics[width=\textwidth]{XO_path_example}
+ \caption{The root and non-root paths of two individuals in the final generation. Dotted arrows represent transformations (blue for root crossover, red for non-root crossover, black for reproduction). Solid arrows represent the root and non-root ancestry paths (blue for root crossover parent path and red for non-root crossover parent path). Solid blue paths traverse dotted blue and black paths, and solid red paths traverse dotted red and black paths. The individual marked by the green box is the most fit individual in the final generation.}
+ \label{fig:XO_path_example}
+\end{figure}
+
+From this query, we obtained a graph of the entire root line of the ``winning'' individual and we were able to visualize the differences between the fitness and penalized fitness of each individual in the line. Both the root line and non-root line are displayed. The root line follows the path of individuals along the root parent crossover transformation and all single parent transformations(elitism, reproduction, mutation). Non-root follows the non-root crossover transformation with single parent transformations demonstrated in Figure \ref{fig:XO_path_example}. The resulting information regarding the fitness of both root and non-root ancestors of the most fit final individual over all generations is presented in Figure \ref{fig:rootVsNonrootFitness}. 
+
+\begin{figure}[tb]
+ \centering
+ \includegraphics[height=0.68\textwidth]{Combined_fitness_over_time}
+ \caption{Root Versus Non-Root Fitness in Ancestry of Best Tree from Final Generation of a 10K Run. A logarithmic scale has been applied to the fitness axis. }
  \label{fig:rootVsNonrootFitness}
 \end{figure}
 
@@ -288,6 +298,16 @@ As can be seen in Figure \ref{fig:rootVsNonrootFitness}, while root parent fitne
 \section{Conclusions} \label{sec:conclusion}
 
 A critical point is that graph databases like Neo4j don't make anything possible that was once impossible; they instead make these things vastly simpler and allow open-ended exploration. Each of the queries and questions we've discussed could be handled by, for example, special purpose code added to the evolutionary system to specifically capture that specific information. Many, if not most, of these have no doubt been addressed in a piecemeal fashion by previous research. Researchers observed~\cite{mcphee1999analysis} nearly 15 years ago, that root parent lineages were significant, and that these lineages quickly coalesced into a shared common ancestor, but that was using a specialized custom system to track that data, and there has been limited follow-up by others since then. We suspect a significant reason for the lack of similar work is simply the effort required to collect and analyze the substantial amount of data this entails, and the lack of good tools to simplify that process.
+
+Now that we have access to a myriad of data from a genetic programming run, we are capable of deducing patterns. For future research, we have identified several topics to pursue.
+
+One topic which may benefit from further investigation is the percentage of viable transformations (transformations where the child is more fit than its parent or parents). One method of going about this is to dynamically tune mutation and crossover percentages over time to increase the likelihood of generating viable transformations. Additionally, we could also investigate the effect of forcing the root parent to have a better fitness than the non-root parent due to its record of having a low success rate, as seen in Figure~\ref{fig:improvedFitness} and Figure~\ref{fig:improvedFitness1K}.
+
+Another potential route to explore is if and when clades interbreed, or if they are completely separate species. If there is any interbreeding, this would allow exploration into how interbreeding contributes to the overall fitness of the clade. 
+
+A final area identified here for further investigation (although there are many potential others that have been left unmentioned because of the sheer amount of data) is to analyze the fitness over time of the ``winning'' lineage. In the Figure~\ref{fig:rootVsNonrootFitness}, we saw several areas were the fitness became worse before becoming better. Although spikes of poor fitness do not happen prior to all improvements, these spikes do happen frequently enough to be significant. Investigation into the characteristics of individuals in these spikes could lead to a better understanding of how improvements in fitness occur.
+
+In summary, while this work has demonstrated that Neo4j does in fact provide a useful tool in recording and analyzing data collected from genetic programming systems, there is much further work to be done with this information.
 
 \section*{Acknowledgements}
 
