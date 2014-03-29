@@ -214,7 +214,7 @@ The MATCH statement describes that s and n are individuals in generation one and
 
 This data demonstrates that, at least in this specific instance, all 10,000 individuals in the final generation can be traced back along their root parent line to only two individuals in the initial generation. This, in support of data gathered by McPhee and Hopper \cite{mcphee1999analysis}, indicates that the percentage of initial individuals with direct descendants in the final generation is relatively small. Furthermore, while neither of these individuals demonstrated the best initial fitness (24.18), both do appear in the top 5\% of fit first generation individuals. Whether this high fitness rate is consistent across multiple runs is unclear.
 
-To determine the effectiveness of mutation versus crossover we wrote several queries similiar to the following:
+To determine the effectiveness of mutation versus crossover we wrote several queries similar to the following:
 
 \begin{verbatim}
 //Count total number of crossovers
@@ -240,6 +240,14 @@ These two queries above specifically identified the total number of crossovers a
  \label{fig:improvedFitness}
 \end{figure}
 
+To confirm the data we found in Figure~\ref{fig:improvedFitness}, we used the same queries on three 1K runs to obtain the graph in Figure~\ref{improvedFitness1K}. Again, we obtained similar data. In the first generations, mutation produced children that were better than their parents over 30\% of the time. As time progressed, the success of mutation decreased dramatically as time progressed dropping as low as ??5??\% of the time. On the other hand, the crossover percentages stayed relatively constant with the exception of the first ten generations of non-root crossover. Notice that the crossover variances were very small, meaning that crossover is a stable transformation over time. 
+
+\begin{figure}[tb]
+ \centering
+ \includegraphics[height=0.68\textwidth]{Percent_successful_Axiom_1K_runs}
+ \caption{Percentage of Cases Where the Child is Fitter Than the Parent Over Five Generation Blocks in Three 1K Runs. Shadows indicate the variance between each of the three runs.  }
+ \label{fig:improvedFitness1K}
+\end{figure}
 
 
 To find a common ancestor of entire last generation, we executed the following query:   
@@ -254,7 +262,7 @@ RETURN distinct id(parent), type(rel), id(grandparent);
 \begin{figure}[tb]
  \centering
  \includegraphics[width= \textwidth]{subset_confluence_trimmed}
- \caption{Results of Example Query}
+ \caption{Results of finding the common ancestor between 11 random individuals and the ``winner'' highlight by a green box. Mutations relationships are highlighted by red arrows. Crossovers are blue arrows. Reproduction is a dotted black line and elitism is a solid black line.}
  \label{fig:exampleQuery1}
 \end{figure}
 
