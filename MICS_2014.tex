@@ -177,18 +177,11 @@ Each individual has a relation to its parent (or parents in the case of crossove
 
 \section{Results} \label{sec:results}
 
-\begin{figure}[tb]
- \centering
- \includegraphics[height=0.68\textwidth]{Root_vs_nonroot_line_fitnesses}
- \caption{Root Versus Non-Root Fitness in Ancestry of Best Tree from Final Generation of a 10K Run}
- \label{fig:rootVsNonrootFitness}
-\end{figure}
-
 To obtain the results presented here, we completed six runs at population 1000, and one 10000 run. From these runs, we were able to retrieve a variety of interesting data within a reasonable amount of time. The following are the questions we asked of the database:
 \begin{itemize}
 \item \textit{How many individuals in the initial generation have any root parent descendants in the final generation?}
 \item \textit{How well do mutations perform against crossovers where the root parent is more fit than the non-root parent, and vice versa?}
-\item \textit{Do a group of individual have a common ancestor and in what generation does that ancestor occur?}
+\item \textit{Do a group of individuals have a common ancestor and in what generation does that ancestor occur?}
 \item \textit{What does the fitness of the ``winning'' line look like over time?}
 
 \end{itemize}
@@ -202,15 +195,34 @@ MATCH (startNode:Individual {generation: 1})-
 RETURN distinct id(startNode), startNode.penalizedFitness;
 \end{verbatim}
 
-The MATCH statement describes that s and n are individuals in generation one and one hundred respectively using indexing. The relationship between them must be elitism, reproduction, mutation, or root parent crossover and must have a path depth of 99.
-The RETURN statment returns all individual ids along with its fitness in the initial generation that fit the criteria.    
+The MATCH statement describes that s and n are individuals in generation one and one hundred respectively using indexing. The relationship between them must be elitism, reproduction, mutation, or root parent crossover and must have a path depth of 99. The RETURN statement returns all individual ids along with its fitness in the initial generation that fit the criteria. This query produces the set of individuals that have descendant in the final generation. These individuals and their penalized fitness are represented in Table \ref{tab:descendantsTable}.
+\begin{table}[tb]
+\begin{center}
+\begin{tabular}{|r|r|}
+    \hline
+    %\multicolumn{2}{|c|}{\textbf{First Generation Individuals with Final Generation Descendants}} \\
+    %\hline
+    \textbf{Individual} & \textbf{Penalized Fitness} \\ \hline
+    2595 & 38.9820979981526 \\
+    3325 & 40.36373034994929 \\
+    \hline
+\end{tabular}
+\caption{List of individuals in the initial generation of the 10K run which produced root descendants in the final generation.}
+\label{tab:descendantsTable}
+\end{center}
+\end{table}
+
+This data demonstrates that, at least in this specific instance, all 10,000 individuals in the final generation can be traced back along their root parent line to only two individuals in the initial generation. This, in support of data gathered by McPhee and Hopper \cite{mcphee1999analysis}, indicates that the percentage of initial individuals with direct descendants in the final generation is relatively small. Furthermore, while neither of these individuals demonstrated the best initial fitness (24.18), both do appear in the top 5\% of fit first generation individuals. Whether this high fitness rate is consistent across multiple runs is unclear.
 
 To determine the effectiveness of mutation versus crossover we wrote several queries similiar to the following:
 
 \begin{verbatim}
+//Count total number of crossovers
 
 MATCH (r)-[:ROOT_XOOF]->(c)<-[:NONROOT_XOOF]-(n)
 RETURN count(distinct c);
+
+//Count total number of crossovers fitting the description
 
 MATCH (r)-[:ROOT_XOOF]->(c)<-[:NONROOT_XOOF]-(n)
 where c.penalizedFitness < r.penalizedFitness 
@@ -219,19 +231,47 @@ RETURN count(distinct c);
 
 \end{verbatim}
 
-These two queries specifically identified the total number of crossovers and the number of root crossovers where the child was more fit than either parent and the root parent was more fit than the non-root parent. The other two cases, mutation and non-root crossover (the child was more fit than either parent and non-root parent was more fit than the root parent), represented in Table ... had similar structures. This allowed for collection of the percentages seen in Table .... 
+These two queries above specifically identified the total number of crossovers and the number of root crossovers where the child was more fit than either parent and the root parent was more fit than the non-root parent. The other two cases, mutation and non-root crossover (the child was more fit than either parent and non-root parent was more fit than the root parent), represented in Figure \ref{fig:improvedFitness} had similar structures. The results of this query may be seen in Figure \ref{fig:improvedFitness}.
+
+\begin{figure}[tb]
+ \centering
+ \includegraphics[height=0.68\textwidth]{Blocked_success_percentages}
+ \caption{Percentage of Cases Where the Child is Fitter Than the Parent Over Five Generation Blocks in 10K Run}
+ \label{fig:improvedFitness}
+\end{figure}
+
+
+
+To find a common ancestor of entire last generation, we executed the following query:   
 
 \begin{verbatim}
-MATCH (n:Individual {generation: 100})
-<-[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*0..]-(p)
-<-[rel:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF]-(q)
-RETURN distinct id(p), type(rel), id(q);
+MATCH (child:Individual {generation: 100})
+<-[:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF*0..]-(parent)
+<-[rel:ELITISM|PARENTOF|MUTANTOF|ROOT_XOOF]-(grandparent)
+RETURN distinct id(parent), type(rel), id(grandparent);
 \end{verbatim}
+
+\begin{figure}[tb]
+ \centering
+ \includegraphics[width= \textwidth]{subset_confluence_trimmed}
+ \caption{Results of Example Query}
+ \label{fig:exampleQuery1}
+\end{figure}
+
+From this query we found several interesting occurrences. In finding a common ancestor, we can assume that this ancestor carries certain positive traits. This information may be relevant in determining if traits other than fitness give an individual  chance of survival. In the 10K run, two distinct species were produced. One species flourished, accounting for 99.76\% of the final population while the second species consisted of only 24 individuals. These two species are descended from the individuals presented in Table~\ref{tab:descendantsTable}. While there are two individuals that are direct ancestors, descendants of the more fit individual predominated. Given more time, the second species most likely would have gone extinct.
+
+%What does fitness over time look like?
+\begin{figure}[tb]
+ \centering
+ \includegraphics[height=0.68\textwidth]{Root_vs_nonroot_line_fitnesses}
+ \caption{Root Versus Non-Root Fitness in Ancestry of Best Tree from Final Generation of a 10K Run}
+ \label{fig:rootVsNonrootFitness}
+\end{figure}
 
 
 \section{Conclusions} \label{sec:conclusion}
 
-A critical point is that graph databases like Neo4j don't make anything possible that was once impossible; they instead make these things vastly simpler and allow open-ended exploration. Each of the queries and questions we've discussed could be handled by, for example, special purpose code added to the evolutionary system to specifically capture that specific information. Many, if not most, of these have no doubt been addressed in a piecemeal fashion by previous research. We observed (GECCO 99 paper) nearly 15 years ago, for example, that root parent lineages were significant, and that these lineages quickly coalesced into a shared common ancestor, but that was using a specialized custom system to track that data, and there has been limited follow-up, by us or others, since then. We suspect a significant reason for the lack of similar work is simply the effort required to collect and analyze the substantial amount of data this entails, and the lack of good tools to simplify that process.
+A critical point is that graph databases like Neo4j don't make anything possible that was once impossible; they instead make these things vastly simpler and allow open-ended exploration. Each of the queries and questions we've discussed could be handled by, for example, special purpose code added to the evolutionary system to specifically capture that specific information. Many, if not most, of these have no doubt been addressed in a piecemeal fashion by previous research. Researchers observed~\cite{mcphee1999analysis} nearly 15 years ago, that root parent lineages were significant, and that these lineages quickly coalesced into a shared common ancestor, but that was using a specialized custom system to track that data, and there has been limited follow-up by others since then. We suspect a significant reason for the lack of similar work is simply the effort required to collect and analyze the substantial amount of data this entails, and the lack of good tools to simplify that process.
 
 \section*{Acknowledgements}
 
